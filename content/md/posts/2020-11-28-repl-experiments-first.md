@@ -3,8 +3,6 @@
 :date "2020-11-28"
 :tags ["clojure" "repl"]}
 
-## Introduction
-
 Lorsqu'on entre dans le monde Clojure, on entend parler du "REPL" et des nombreux avantages qu'il présente.
 
 Je ne prétendrais pas vous expliquer en quoi le REPL Clojure est différent des REPL qu'on peut trouver dans d'autres langages.
