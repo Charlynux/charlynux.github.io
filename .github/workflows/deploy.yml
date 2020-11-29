@@ -12,10 +12,11 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install and Build 🔧
-        uses: DeLaGuardo/setup-clojure@master
+      - uses: DeLaGuardo/setup-clojure@master
         with:
           lein: "latest"
+
+      - name: Install and Build 🔧
         run: |
           lein run
 
