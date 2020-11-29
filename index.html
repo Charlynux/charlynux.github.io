@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Lead Devotion</title>
+    
+    <meta name="description" content="Yet Another Blog" />
+    <meta name="keywords" content="" />
+    
+    <link rel="canonical" href="https://charlynux.github.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="//fonts.googleapis.com/css?family=Alegreya:400italic,700italic,400,700"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"
+    />
+    <link
+      href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/default.min.css"
+    />
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <div class="navbar-header">
+          <button
+            type="button"
+            class="navbar-toggle collapsed"
+            data-toggle="collapse"
+            data-target="#navbar"
+            aria-expanded="false"
+            aria-controls="navbar"
+          >
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">Lead Devotion</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li  class="active" >
+              <a href="/">Home</a>
+            </li>
+            <li >
+              <a href="/archives/">Archives</a>
+            </li>
+            
+            <li><a href="/feed.xml">RSS</a></li>
+          </ul>
+        </div>
+        <!--/.nav-collapse -->
+      </div>
+      <!--/.container-fluid -->
+    </nav>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-9">
+          <div id="content">
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">28 novembre 2020</div>
+        
+    </div>
+    <h2>REPL Experiments #1</h2>
+</div>
+<div>
+    
+    <h2 id="introduction">Introduction</h2><p>Lorsqu'on entre dans le monde Clojure, on entend parler du "REPL" et des nombreux avantages qu'il présente.</p><p>Je ne prétendrais pas vous expliquer en quoi le REPL Clojure est différent des REPL qu'on peut trouver dans d'autres langages.</p><p>Personnellement, je me contente d'utiliser le REPL en local. Dans mon éditeur, je peux évaluer des morceaux de code un à un, me permettant ainsi de construire mes programmes par petites étapes.</p><p>Mais certains vont beaucoup plus loin dans leur usage. Ils s'en servent pour débugger leur code en production ou encore pour travailler en Clojure sur d'autres langages de la JVM (Java, Scala, ...).</p><p>J'entame ici une série d'expérimentations autour de ce sujet. L'objectif étant de me permettre de mieux appréhender ce qu'il est possible de faire avec le REPL.</p><h2 id="notre-cas">Notre cas</h2><p>Pour une première expérience, j'ai essayé de faire simple.</p><p>Récemment, j'ai publié un JAR exécutant du code Clojure. Le JAR peut être trouvé <a href="https://github.com/Iteracode/nightcode-2020-api-examples">ici</a>.</p><p>Ce programme tourne indéfiniment. Toutes les minutes, il exécute des tests sur une url et affiche les résultats dans la console. Nous allons essayer de nous brancher à ce programme pour l'explorer voire le modifier.</p><p>Je précise que les actions suivantes n'ont nécessité aucune modification dans le code. Le JAR est celui publié il y a 2 mois.</p><h2 id="comment-procéder-">Comment procéder ?</h2><p>La <a href="https://clojure.org/reference/repl_and_main">documentation officielle</a> nous indique qu'il suffit d'ajouter un paramètre à l'exécution du programme.</p><pre><code class="cmd">java -Dclojure.server.repl="{:port 5555 :accept clojure.core.server/repl}" -jar nightcode-demo.jar
+</code></pre><h2 id="ca-a-fonctionné-">Ca a fonctionné ?</h2><pre><code class="cmd">telnet localhost 5555
+</code></pre><p>Nous arrivons dans un REPL Clojure. Le paramètre est donc bien pris en compte.</p><p>Pour la suite, nous nous connecterons au REPL depuis un éditeur de texte (Emacs + inf-clojure, dans mon cas) plutôt que de taper directement dans le terminal.</p><h2 id="exploration">Exploration</h2><p>Idéalement, lorsque vous vous connectez à un REPL depuis votre éditeur, vous le faites avec le code source associé au REPL.</p><p>Mais ce n'est pas obligatoire, voyons ce que l'on peut faire sans.</p><h3 id="namespaces">Namespaces</h3><p>On peut lister les namespaces du projet.</p><pre><code class="clj">(all-ns)
+</code></pre><p>On peut se limiter à ceux que nous avons implémenté.</p><pre><code class="clj">(defn source? [a-ns]
+    (let [ns-name (str a-ns)]
+        (or (.startsWith ns-name "iteracode")
+            (.startsWith ns-name "nightcode")
+            (.startsWith ns-name "tavern"))))
+
+(def my-namespaces
+    (-&gt;&gt;
+        (all-ns)
+        (filter source?)))
+</code></pre><p>A partir de cette liste, on peut afficher toutes les fonctions.</p><pre><code class="clj">(mapcat #(vals (ns-publics %)) my-namespaces)
+</code></pre><h3 id="analyse-dune-fonction">Analyse d'une fonction</h3><p>Pour l'exemple, j'ai choisi la fonction <code>iteracode.examiner.report/report-results-console</code>.</p><pre><code class="clj">(source iteracode.examiner.report/report-results-console)
+</code></pre><p>J'avais exclu le code source du JAR, l'appel précédent retourne donc "Source not found".</p><p>Cette fonction n'est pas documentée, mais on peut au moins obtenir sa signature.</p><pre><code class="clj">(doc iteracode.examiner.report/report-results-console)
+</code></pre><pre><code>-------------------------
+iteracode.examiner.report/report-results-console
+([results])
+</code></pre><h3 id="modification-dune-fonction">Modification d'une fonction</h3><p>Dans le code suivant, on change le comportement de la fonction.</p><pre><code class="clj">(in-ns 'iteracode.examiner.report)
+
+(def report-results-console-original report-results-console)
+
+(defn report-results-console [results]
+    (println "COUCOU")
+    (report-results-console-original results))
+</code></pre><p>A l'exécution suivante des tests, notre modification a été prise en compte.</p><pre><code>Tests running...
+COUCOU
+FAIL - Simple hello, world test
+</code></pre><h2 id="conclusion">Conclusion</h2><p>Sans disposer du code source, nous avons pu nous connecter au programme pendant son exécution et même modifier son comportement.</p><p>Dans le monde réel, le projet tournerait sur un serveur distant. Dans une prochaine expérimentation, nous essaierons d'exposer le REPL via un tunnel SSH.</p>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags-output/clojure/">clojure</a>
+    
+    <a href="/tags-output/repl/">repl</a>
+    
+</div>
+
+
+    
+
+    <div id="prev-next">
+        
+        
+    </div>
+</div>
+</div>
+        </div>
+
+        <div class="col-md-3">
+          <div id="sidebar">
+            
+            <div id="recent">
+              <h3>Recent Posts</h3>
+              <ul>
+                
+                <li><a href="/posts-output/2020-11-28-repl-experiments-first/">REPL Experiments #1</a></li>
+                
+              </ul>
+            </div>
+             
+            <div id="tags">
+              <h3>Tags</h3>
+              <ul>
+                
+                <li><a href="/tags-output/clojure/">clojure</a></li>
+                
+                <li><a href="/tags-output/repl/">repl</a></li>
+                
+              </ul>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <footer>
+        Copyright &copy; 2020 Charles Fourdrignier
+        <p style="text-align: center">
+          Powered by <a href="http://cryogenweb.org">Cryogen</a>
+        </p>
+      </footer>
+    </div>
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script src="/js/highlight.pack.js" type="application/javascript"></script>
+    <script>
+      hljs.initHighlightingOnLoad();
+    </script>
+     
+  </body>
+</html>
