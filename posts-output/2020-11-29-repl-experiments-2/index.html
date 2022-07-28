@@ -90,7 +90,7 @@
     &lt;artifactId&gt;clojure&lt;/artifactId&gt;
     &lt;version&gt;1.10.1&lt;/version&gt;
 &lt;/dependency&gt;
-</code></pre><h3 id="lancer-le-repl">Lancer le REPL</h3><p>Je ne suis pas parvenu à lancer le REPL via les arguments. Je me suis donc rabattu sur une solution en Java.</p><p>Cette solution est détournée d'un snippet en <a href="https://blog.michielborkent.nl/2016/07/26/clojure-from-scala/">Scala</a> et ressemble beaucoup à la méthode pour lancer un <a href="https://nrepl.org/nrepl/usage/server.html#embedding-in-a-java-application">NREPL</a>.</p><pre><code class="java">IFn require = Clojure.var("clojure.core", "require");
+</code></pre><h3 id="lancer-le-repl">Lancer le REPL</h3><p>Je ne suis pas parvenu à lancer le REPL via les arguments. Je me suis donc rabattu sur une solution en Java.</p><p>Cette solution est détournée d'un snippet en <a href="https://blog.michielborkent.nl/clojure-from-scala.html">Scala</a> et ressemble beaucoup à la méthode pour lancer un <a href="https://nrepl.org/nrepl/usage/server.html#embedding-in-a-java-application">NREPL</a>.</p><pre><code class="java">IFn require = Clojure.var("clojure.core", "require");
 require.invoke(Clojure.read("clojure.core.server"));
 IFn start = Clojure.var("clojure.core.server", "start-server");
 start.invoke(Clojure.read("{:port 5555 :accept clojure.core.server/repl :name repl :server-daemon false}"));
@@ -225,7 +225,7 @@ public class ClojureRepl {
         </div>
       </div>
       <footer>
-        Copyright &copy; 2020 Charles Fourdrignier
+        Copyright &copy; 2022 Charles Fourdrignier
         <p style="text-align: center">
           Powered by <a href="http://cryogenweb.org">Cryogen</a>
         </p>
