@@ -37,7 +37,7 @@ Avant toute chose, il nous faut ajouter la dépendance Clojure. S'agissant d'un 
 
 Je ne suis pas parvenu à lancer le REPL via les arguments. Je me suis donc rabattu sur une solution en Java.
 
-Cette solution est détournée d'un snippet en [Scala](https://blog.michielborkent.nl/2016/07/26/clojure-from-scala/) et ressemble beaucoup à la méthode pour lancer un [NREPL](https://nrepl.org/nrepl/usage/server.html#embedding-in-a-java-application).
+Cette solution est détournée d'un snippet en [Scala](https://blog.michielborkent.nl/clojure-from-scala.html) et ressemble beaucoup à la méthode pour lancer un [NREPL](https://nrepl.org/nrepl/usage/server.html#embedding-in-a-java-application).
 
 ``` java
 IFn require = Clojure.var("clojure.core", "require");
